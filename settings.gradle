@@ -1,1 +1,3 @@
 rootProject.name = 'scam-o-gram'
+include 'authorization-microservice'
+include 'eureka-server'
