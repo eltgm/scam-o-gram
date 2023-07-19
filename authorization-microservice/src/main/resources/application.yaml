@@ -1,0 +1,21 @@
+spring:
+  r2dbc:
+    url: r2dbc:pool:postgresql://localhost:5432/auth_db
+    username: myuser
+    password: secret
+  flyway:
+    url: jdbc:postgresql://localhost:5432/auth_db
+    locations: classpath:db/migration
+    password: secret
+    user: myuser
+  rabbitmq:
+    host: localhost
+    username: myuser
+    password: secret
+    port: 5672
+
+eureka:
+  instance:
+    appname: auth-microservice
+  client:
+    register-with-eureka: false
