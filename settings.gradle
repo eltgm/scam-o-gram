@@ -1,2 +1,4 @@
 rootProject.name = 'scam-o-gram'
 include 'eureka-server'
+include 'auth-server'
+include 'test-service'
