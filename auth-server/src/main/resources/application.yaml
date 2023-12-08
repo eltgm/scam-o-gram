@@ -1,0 +1,21 @@
+server:
+  port: 9000
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth_db
+    password: secret
+    username: myuser
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    url: jdbc:postgresql://localhost:5432/auth_db
+    locations: classpath:db/migration
+    password: secret
+    user: myuser
+  security:
+    oauth2:
+      authorizationserver:
+        issuer: http://auth-server:9000
+#logging:
+#  level:
+#    org.springframework.security: TRACE
