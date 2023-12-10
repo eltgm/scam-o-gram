@@ -46,41 +46,41 @@
                     Регистрация
                 </div>
                 <div class="card-body">
-                    <form>
+                    <form method="post" action="/api/v1/user/register" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="username">Имя пользователя:</label>
-                            <input type="text" class="form-control" id="username" placeholder="Введите имя пользователя" required>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Введите имя пользователя" required>
                         </div>
                         <div class="form-group">
                             <label for="password">Пароль (минимум 8 символов, цифры и буквы):</label>
-                            <input type="password" class="form-control" id="password" pattern="^(?=.*\d)(?=.*[a-zA-Z]).{8,}$" placeholder="Введите пароль" required>
+                            <input type="password" class="form-control" id="password"  name="password" pattern="^(?=.*\d)(?=.*[a-zA-Z]).{8,}$" placeholder="Введите пароль" required>
                         </div>
                         <div class="form-group">
                             <label for="firstName">Имя:</label>
-                            <input type="text" class="form-control" id="firstName" placeholder="Введите имя" required>
+                            <input type="text" class="form-control" id="firstName" name="name" placeholder="Введите имя" required>
                         </div>
                         <div class="form-group">
                             <label for="lastName">Фамилия:</label>
-                            <input type="text" class="form-control" id="lastName" placeholder="Введите фамилию" required>
+                            <input type="text" class="form-control" id="lastName" name="surname" placeholder="Введите фамилию" required>
                         </div>
                         <div class="form-group">
                             <label for="middleName">Отчество:</label>
-                            <input type="text" class="form-control" id="middleName" placeholder="Введите отчество">
+                            <input type="text" class="form-control" id="middleName"  name="middleName" placeholder="Введите отчество">
                         </div>
                         <div class="form-group">
                             <label for="dob">Дата рождения:</label>
-                            <input type="date" class="form-control" id="dob" required>
+                            <input type="date" class="form-control" id="dob" required name="birthDate">
                         </div>
                         <div class="form-group">
                             <label for="gender">Пол:</label>
-                            <select class="form-control" id="gender" required>
+                            <select class="form-control" id="gender" required name="sex">
                                 <option value="male">Мужской</option>
                                 <option value="female">Женский</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="photo">Загрузить фотографию:</label>
-                            <input type="file" class="form-control-file" id="photo" accept="image/*">
+                            <input type="file" class="form-control-file" id="photo" name="photo" accept="image/*">
                         </div>
                         <button type="submit" class="btn btn-success">Зарегистрироваться</button>
                     </form>

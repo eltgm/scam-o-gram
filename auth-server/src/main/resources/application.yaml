@@ -2,6 +2,11 @@ server:
   port: 9000
 
 spring:
+  servlet:
+    multipart:
+      enabled: true
+      location: /Users/v.sultanyarov/Desktop/tmp #TODO временное
+      max-file-size: 5MB
   datasource:
     url: jdbc:postgresql://localhost:5432/auth_db
     password: secret
@@ -16,6 +21,3 @@ spring:
     oauth2:
       authorizationserver:
         issuer: http://auth-server:9000
-#logging:
-#  level:
-#    org.springframework.security: TRACE

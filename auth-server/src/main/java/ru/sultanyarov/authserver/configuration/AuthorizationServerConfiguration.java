@@ -41,19 +41,18 @@ public class AuthorizationServerConfiguration {
                 // authorization endpoint
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(
-                                new LoginUrlAuthenticationEntryPoint("/login"))
+                                new LoginUrlAuthenticationEntryPoint("/authorization.html"))
                 );
 
         return http.build();
     }
-
 
     //TODO для тестов будет жить здесь, ближе к финалу переведу в бд
     @Bean
     RegisteredClientRepository registeredClientRepository() {
         RegisteredClient loginClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("login-client")
-                .clientSecret("{noop}secret-login-client")
+                .clientSecret("$2a$10$2CjV9j/YLU3Uy8jbZi2S..LdK6vLnVbMylLNC.4GWxHjrZ94T.72y")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
