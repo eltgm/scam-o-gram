@@ -1,5 +1,8 @@
 plugins {
+    id 'java'
     id 'org.springframework.boot' version '3.1.1'
+    id "org.openapi.generator" version "6.6.0"
+    id 'io.spring.dependency-management' version '1.1.0'
 }
 
 group = 'ru.sultanyarov'
@@ -9,27 +12,80 @@ java {
     sourceCompatibility = '17'
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    //DB
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.flywaydb:flyway-core'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    //Security
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.flywaydb:flyway-core'
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
+
+    //Util
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'com.google.guava:guava:32.0.1-jre'
+
+    //Mapping support
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+
+    //OpenApi generator
+    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+    implementation "org.openapitools:jackson-databind-nullable:0.2.1"
+}
+
+openApiGenerate {
+    verbose = false
+    validateSpec = true
+    generatorName = "spring"
+    inputSpec = file('spec/auth.yaml').toPath().toString()
+    apiPackage = 'ru.sultanyarov.authserver.auth'
+    modelPackage = 'ru.sultanyarov.authserver.auth.dto'
+    typeMappings = [
+            OffsetDateTime: 'java.time.LocalDateTime'
+    ]
+    configOptions = [
+            dateLibrary         : "java8",
+            skipDefaultInterface: "true",
+            interfaceOnly       : "true",
+            oas3                : "true",
+            useSpringController : "true",
+            useSpringfox        : "false",
+            useTags             : "true",
+            useSpringBoot3      : "true"
+    ]
+}
+
+sourceSets {
+    main {
+        java.srcDirs += "build/generate-resources/main/src/main/java"
+        java.srcDirs += "$buildDir/generated/src/main/java"
+    }
+    test {
+        java.srcDirs += "build/generate-resources/main/src/main/java"
+        java.srcDirs += "$buildDir/generated/src/main/java"
+    }
+}
+
+compileJava {
+    options.compilerArgs << '-Amapstruct.defaultComponentModel=spring'
+    dependsOn tasks.openApiGenerate
+}
+
+bootJar {
+    archiveFileName = 'auth-server.jar'
+    archiveExtension = '.jar'
 }
 
 tasks.named('test') {

@@ -1,0 +1,78 @@
+swagger: "2.0"
+info:
+  title: Auth service
+  description: |
+    Сервер авторизации. 
+    Предназначен для регистрации пользователей и авторизации их в сторонних сервисах.
+    Использует: 
+      1. Spring Security для авторизации в сервисе и регистрации пользователей.
+      2. Spring OAuth2 authorization server - авторизация внешних сервисов по протоколу oauth2 + получение зашифрованной информации о пользователе с помощью oidc
+  version: '1'
+host: 127.0.0.1:9000
+basePath: /api/v1
+tags:
+  - name: User
+    description: Операции работы с пользователями
+
+paths:
+  /user/register:
+    post:
+      tags:
+        - User
+      operationId: registerUser
+      summary: Регистрация пользователя
+      description: Создаем пользователя в сервере авторизации для использования его аккаунта в других сервисах
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: user
+          in: body
+          description: Регистрируемый пользователь
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        200:
+          description: Зарегистрированный пользователь
+          schema:
+            $ref: '#/definitions/User'
+
+definitions:
+  User:
+    type: object
+    required:
+      - username
+      - password
+      - name
+      - surname
+      - birthDate
+      - sex
+    properties:
+      username:
+        type: string
+        description: Логин пользователя
+      password:
+        type: string
+        description: Пароль пользователя
+      name:
+        type: string
+        description: Имя пользователя
+      surname:
+        type: string
+        description: Фамилия пользователя
+      middleName:
+        type: string
+        description: Отчество пользователя
+      birthDate:
+        type: string
+        format: 'date'
+        description: Дата рождения пользователя
+      sex:
+        type: string
+        enum: ['male', 'female']
+        description: |
+          - ``male``: мужской
+          - ``female``: женский
+      photo:
+        type: file
+        description: Фото профиля пользователя

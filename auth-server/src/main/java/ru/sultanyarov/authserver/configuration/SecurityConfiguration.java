@@ -1,41 +1,52 @@
 package ru.sultanyarov.authserver.configuration;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import ru.sultanyarov.authserver.service.impl.CustomUserDetailsService;
 
 /**
  * Внутренняя конфигурация авторизация для сервера авторизации
  */
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
+    private final CustomUserDetailsService customUserDetailsService;
+
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers("/favicon.ico", "/resources/**", "/error");
+    }
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .userDetailsService(customUserDetailsService)
+                .csrf(AbstractHttpConfigurer::disable) //TODO разобраться, с ним не работает кастомная страница авторизации - вечный редирект
                 .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests.anyRequest().authenticated()
+                        authorizeRequests
+                                .dispatcherTypeMatchers().permitAll()
+                                .requestMatchers("/registration.html", "/api/v1/user/register").permitAll()
+                                .anyRequest().authenticated()
                 )
-                .formLogin(withDefaults());
+                .formLogin(httpSecurityFormLoginConfigurer ->
+                        httpSecurityFormLoginConfigurer
+                                .loginProcessingUrl("/login")
+                                .loginPage("/authorization.html")
+                                .permitAll());
         return http.build();
     }
 
-    //TODO для тестов будет жить здесь, ближе к финалу переведу в бд
     @Bean
-    UserDetailsService users() {
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("password")
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
