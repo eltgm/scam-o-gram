@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ru.sultanyarov.authserver.configuration.security.filter.JwtAuthFilter;
 import ru.sultanyarov.authserver.service.impl.CustomUserDetailsService;
 
 /**
@@ -20,15 +22,17 @@ import ru.sultanyarov.authserver.service.impl.CustomUserDetailsService;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
     private final CustomUserDetailsService customUserDetailsService;
+    private final JwtAuthFilter filter;
 
     @Bean
     WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers("/favicon.ico", "/resources/**", "/error");
+        return web -> web.ignoring().requestMatchers("/favicon.ico", "/resources/**", "/error", "/api/v1/user_info");
     }
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(customUserDetailsService)
                 .csrf(AbstractHttpConfigurer::disable) //TODO разобраться, с ним не работает кастомная страница авторизации - вечный редирект
                 .authorizeHttpRequests(authorizeRequests ->

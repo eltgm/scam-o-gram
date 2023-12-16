@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.1'
     id "org.openapi.generator" version "6.6.0"
-    id 'io.spring.dependency-management' version '1.1.0'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'ru.sultanyarov'
@@ -17,6 +17,8 @@ repositories {
 }
 
 dependencies {
+    implementation project(':common')
+
     //DB
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.flywaydb:flyway-core'
@@ -25,6 +27,9 @@ dependencies {
     //Security
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
@@ -43,6 +48,9 @@ dependencies {
     //OpenApi generator
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
     implementation "org.openapitools:jackson-databind-nullable:0.2.1"
+
+    //AOP
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
 openApiGenerate {
@@ -53,7 +61,8 @@ openApiGenerate {
     apiPackage = 'ru.sultanyarov.authserver.auth'
     modelPackage = 'ru.sultanyarov.authserver.auth.dto'
     typeMappings = [
-            OffsetDateTime: 'java.time.LocalDateTime'
+            OffsetDateTime: 'java.time.LocalDateTime',
+            Error         : 'ru.sultanyarov.common.dto.Error'
     ]
     configOptions = [
             dateLibrary         : "java8",
@@ -79,7 +88,7 @@ sourceSets {
 }
 
 compileJava {
-    options.compilerArgs << '-Amapstruct.defaultComponentModel=spring'
+    options.compilerArgs << '-Amapstruct.defaultComponentModel=spring' << '-Amapstruct.unmappedTargetPolicy=IGNORE'
     dependsOn tasks.openApiGenerate
 }
 

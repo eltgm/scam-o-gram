@@ -12,4 +12,11 @@ public interface UserService {
      * @param userEntity подготовленная сущность пользователя
      */
     UserEntity registerUser(UserEntity userEntity);
+
+    /**
+     * Получение пользователя по логину
+     * @param username - логин пользователя
+     * @return информация о пользователе
+     */
+    UserEntity findByUsername(String username);
 }

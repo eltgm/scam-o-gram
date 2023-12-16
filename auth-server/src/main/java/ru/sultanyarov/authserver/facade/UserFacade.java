@@ -2,6 +2,7 @@ package ru.sultanyarov.authserver.facade;
 
 import org.springframework.web.multipart.MultipartFile;
 import ru.sultanyarov.authserver.auth.dto.User;
+import ru.sultanyarov.authserver.auth.dto.UserInfo;
 
 import java.time.LocalDate;
 
@@ -24,4 +25,12 @@ public interface UserFacade {
      * @return зарегестрированный пользователь
      */
     User registerUser(String username, String password, String name, String surname, LocalDate birthDate, String sex, String middleName, MultipartFile photo);
+
+    /**
+     * Получение информации о пользователе
+     *
+     * @param username - логин пользователя
+     * @return Информацию о пользователе для OIDC
+     */
+    UserInfo getUserInfo(String username);
 }

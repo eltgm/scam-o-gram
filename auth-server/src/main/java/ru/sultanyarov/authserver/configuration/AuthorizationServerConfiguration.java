@@ -18,8 +18,11 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import ru.sultanyarov.authserver.utils.JwksUtils;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -59,6 +62,7 @@ public class AuthorizationServerConfiguration {
                 .redirectUri("http://localhost:8080/login/oauth2/code/login-client")
                 .scope(OidcScopes.OPENID) //нужно обязательно, тк включен oidc
                 .scope("TEST")
+                .scope(OidcScopes.PROFILE)
                 .build();
 
         return new InMemoryRegisteredClientRepository(loginClient);
@@ -66,7 +70,14 @@ public class AuthorizationServerConfiguration {
 
     @Bean
     Supplier<JWKSet> jwkSetProvider() {
-        RSAKey rsaKey = JwksUtils.generateRsa();
+        KeyPair keyPair = keyPair();
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+
+        RSAKey rsaKey = new RSAKey.Builder(publicKey)
+                .privateKey(privateKey)
+                .keyID(UUID.randomUUID().toString())
+                .build();
         JWKSet jwkSet = new JWKSet(rsaKey);
         return () -> jwkSet;
     }
@@ -74,5 +85,18 @@ public class AuthorizationServerConfiguration {
     @Bean
     JWKSource<SecurityContext> jwkSource(Supplier<JWKSet> jwkSetProvider) {
         return (jwkSelector, securityContext) -> jwkSelector.select(jwkSetProvider.get());
+    }
+
+    @Bean //костыль, чтобы был доступ к public key
+    KeyPair keyPair() {
+        KeyPair keyPair;
+        try {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(2048);
+            keyPair = keyPairGenerator.generateKeyPair();
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
+        return keyPair;
     }
 }

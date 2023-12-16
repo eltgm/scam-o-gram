@@ -36,6 +36,32 @@ paths:
           description: Зарегистрированный пользователь
           schema:
             $ref: '#/definitions/User'
+        404:
+          description: Пользователь не найден
+          schema:
+            $ref: 'include_common_model_v1.yaml#/definitions/Error'
+        409:
+          description: Пользователь уже зарегистрирован
+          schema:
+            $ref: 'include_common_model_v1.yaml#/definitions/Error'
+  /user_info:
+    get:
+      tags:
+        - User
+      operationId: userInfo
+      summary: Получение информации о пользователе для OIDC
+      description: Получаем информацию о пользователе из токена oauth
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Информация о пользователе
+          schema:
+            $ref: '#/definitions/UserInfo'
+        404:
+          description: Пользователь не найден
+          schema:
+            $ref: 'include_common_model_v1.yaml#/definitions/Error'
 
 definitions:
   User:
@@ -69,10 +95,43 @@ definitions:
         description: Дата рождения пользователя
       sex:
         type: string
-        enum: ['male', 'female']
+        enum: [ 'male', 'female' ]
         description: |
           - ``male``: мужской
           - ``female``: женский
       photo:
         type: file
         description: Фото профиля пользователя
+  UserInfo:
+    type: object
+    required:
+      - sub
+      - nickname
+      - familyName
+      - birthdate
+      - gender
+      - middleName
+      - name
+    properties:
+      sub:
+        type: string
+        description: Идентификатор конечного пользователя у Эмитента
+      nickname:
+        type: string
+        description: Логин пользователя
+      familyName:
+        type: string
+        description: Фамилия пользователя
+      birthDate:
+        type: string
+        format: 'date'
+        description: Дата рождения пользователя
+      gender:
+        type: string
+        description: Пол пользователя
+      middleName:
+        type: string
+        description: Отчество пользователя
+      name:
+        type: string
+        description: Имя пользователя

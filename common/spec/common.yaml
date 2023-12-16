@@ -1,0 +1,63 @@
+swagger: "2.0"
+info:
+  title: TEST
+  description: |
+   Нужно для генерации общих данных.
+  version: '1'
+host: 127.0.0.1:8080
+basePath: /api/v1
+tags:
+  - name: User
+    description: Операции работы с пользователями
+
+paths:
+  /:
+    get:
+      operationId: test
+      responses:
+        200:
+          description: Тест
+        400:
+          description: 'Ошибочный запрос, например, отсутствует один из параметров'
+          schema:
+            $ref: 'include_common_model_v1.yaml#/definitions/Error'
+
+definitions:
+  User:
+    type: object
+    required:
+      - username
+      - password
+      - name
+      - surname
+      - birthDate
+      - sex
+    properties:
+      username:
+        type: string
+        description: Логин пользователя
+      password:
+        type: string
+        description: Пароль пользователя
+      name:
+        type: string
+        description: Имя пользователя
+      surname:
+        type: string
+        description: Фамилия пользователя
+      middleName:
+        type: string
+        description: Отчество пользователя
+      birthDate:
+        type: string
+        format: 'date'
+        description: Дата рождения пользователя
+      sex:
+        type: string
+        enum: [ 'male', 'female' ]
+        description: |
+          - ``male``: мужской
+          - ``female``: женский
+      photo:
+        type: file
+        description: Фото профиля пользователя
