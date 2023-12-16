@@ -21,3 +21,6 @@ spring:
     oauth2:
       authorizationserver:
         issuer: http://auth-server:9000
+        endpoint:
+          oidc:
+            user-info-uri: /api/v1/user_info
